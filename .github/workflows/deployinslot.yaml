@@ -1,15 +1,15 @@
-name: Azure Web App Slot Deployment
+name: Deploy Azure WebApp Slot
 
 on:
   workflow_dispatch:
     inputs:
       branch:
-        description: "Git Branch to Deploy"
+        description: Branch Name
         required: true
-        default: "main"
+        default: main
 
       slot:
-        description: "Deployment Slot"
+        description: Select Slot
         required: true
         type: choice
         options:
@@ -28,88 +28,59 @@ jobs:
 
     steps:
 
-      ############################################################
-      # Checkout Selected Branch
-      ############################################################
+    - name: Checkout Selected Branch
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.inputs.branch }}
 
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.inputs.branch }}
+    - name: Display Deployment Information
+      run: |
+        echo "Repository : ${{ github.repository }}"
+        echo "Branch     : ${{ github.event.inputs.branch }}"
+        echo "Slot       : ${{ github.event.inputs.slot }}"
+        echo "Commit     : $GITHUB_SHA"
 
-      ############################################################
-      # Display Information
-      ############################################################
+    - name: Inject Deployment Information
+      shell: bash
+      run: |
 
-      - name: Display Deployment Information
-        run: |
-          echo "Repository : ${{ github.repository }}"
-          echo "Branch     : ${{ github.event.inputs.branch }}"
-          echo "Slot       : ${{ github.event.inputs.slot }}"
-          echo "Commit     : $GITHUB_SHA"
+        DATE=$(date +"%d-%b-%Y %H:%M:%S UTC")
+        SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
 
-      ############################################################
-      # Inject Values into index.html
-      ############################################################
+        sed -i "s|__REPOSITORY__|${{ github.repository }}|g" webapp2slots/index.html
+        sed -i "s|__WEBAPP__|${WEBAPP_NAME}|g" webapp2slots/index.html
+        sed -i "s|__BRANCH__|${{ github.event.inputs.branch }}|g" webapp2slots/index.html
+        sed -i "s|__SLOT__|${{ github.event.inputs.slot }}|g" webapp2slots/index.html
+        sed -i "s|__COMMIT__|${SHORT_SHA}|g" webapp2slots/index.html
+        sed -i "s|__DATE__|${DATE}|g" webapp2slots/index.html
 
-      - name: Update Deployment Dashboard
-        shell: bash
-        run: |
+    - name: Show Updated HTML
+      run: cat webapp2slots/index.html
 
-          DATE=$(date +"%d-%b-%Y %H:%M:%S UTC")
-          SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
+    - name: Deploy to Production
+      if: github.event.inputs.slot == 'production'
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: ./webapp2slots
 
-          sed -i "s|__REPOSITORY__|${{ github.repository }}|g" website/index.html
-          sed -i "s|__WEBAPP__|${WEBAPP_NAME}|g" website/index.html
-          sed -i "s|__BRANCH__|${{ github.event.inputs.branch }}|g" website/index.html
-          sed -i "s|__SLOT__|${{ github.event.inputs.slot }}|g" website/index.html
-          sed -i "s|__COMMIT__|${SHORT_SHA}|g" website/index.html
-          sed -i "s|__DATE__|${DATE}|g" website/index.html
+    - name: Deploy to Staging
+      if: github.event.inputs.slot == 'staging'
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+        slot-name: staging
+        publish-profile: ${{ secrets.AZURE_WEBAPP_STAGING_PUBLISH_PROFILE }}
+        package: ./webapp2slots
 
-      ############################################################
-      # Show Modified File (Optional)
-      ############################################################
-
-      - name: Preview HTML
-        run: |
-          cat website/index.html
-
-      ############################################################
-      # Deploy to Production
-      ############################################################
-
-      - name: Deploy to Production
-        if: github.event.inputs.slot == 'production'
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: ./website
-
-      ############################################################
-      # Deploy to Staging Slot
-      ############################################################
-
-      - name: Deploy to Staging
-        if: github.event.inputs.slot == 'staging'
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          slot-name: staging
-          publish-profile: ${{ secrets.AZURE_WEBAPP_STAGING_PUBLISH_PROFILE }}
-          package: ./website
-
-      ############################################################
-      # Success Message
-      ############################################################
-
-      - name: Deployment Complete
-        run: |
-          echo "========================================="
-          echo "Deployment Completed Successfully"
-          echo "Repository : ${{ github.repository }}"
-          echo "Web App    : ${WEBAPP_NAME}"
-          echo "Branch     : ${{ github.event.inputs.branch }}"
-          echo "Slot       : ${{ github.event.inputs.slot }}"
-          echo "Commit     : $GITHUB_SHA"
-          echo "========================================="
+    - name: Deployment Complete
+      run: |
+        echo "========================================="
+        echo "Deployment Successful"
+        echo "Repository : ${{ github.repository }}"
+        echo "Web App    : ${WEBAPP_NAME}"
+        echo "Branch     : ${{ github.event.inputs.branch }}"
+        echo "Slot       : ${{ github.event.inputs.slot }}"
+        echo "Commit     : $GITHUB_SHA"
+        echo "========================================="
