@@ -1,0 +1,115 @@
+name: Azure Web App Slot Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Git Branch to Deploy"
+        required: true
+        default: "main"
+
+      slot:
+        description: "Deployment Slot"
+        required: true
+        type: choice
+        options:
+          - production
+          - staging
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
+
+    steps:
+
+      ############################################################
+      # Checkout Selected Branch
+      ############################################################
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      ############################################################
+      # Display Information
+      ############################################################
+
+      - name: Display Deployment Information
+        run: |
+          echo "Repository : ${{ github.repository }}"
+          echo "Branch     : ${{ github.event.inputs.branch }}"
+          echo "Slot       : ${{ github.event.inputs.slot }}"
+          echo "Commit     : $GITHUB_SHA"
+
+      ############################################################
+      # Inject Values into index.html
+      ############################################################
+
+      - name: Update Deployment Dashboard
+        shell: bash
+        run: |
+
+          DATE=$(date +"%d-%b-%Y %H:%M:%S UTC")
+          SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
+
+          sed -i "s|__REPOSITORY__|${{ github.repository }}|g" website/index.html
+          sed -i "s|__WEBAPP__|${WEBAPP_NAME}|g" website/index.html
+          sed -i "s|__BRANCH__|${{ github.event.inputs.branch }}|g" website/index.html
+          sed -i "s|__SLOT__|${{ github.event.inputs.slot }}|g" website/index.html
+          sed -i "s|__COMMIT__|${SHORT_SHA}|g" website/index.html
+          sed -i "s|__DATE__|${DATE}|g" website/index.html
+
+      ############################################################
+      # Show Modified File (Optional)
+      ############################################################
+
+      - name: Preview HTML
+        run: |
+          cat website/index.html
+
+      ############################################################
+      # Deploy to Production
+      ############################################################
+
+      - name: Deploy to Production
+        if: github.event.inputs.slot == 'production'
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./website
+
+      ############################################################
+      # Deploy to Staging Slot
+      ############################################################
+
+      - name: Deploy to Staging
+        if: github.event.inputs.slot == 'staging'
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          slot-name: staging
+          publish-profile: ${{ secrets.AZURE_WEBAPP_STAGING_PUBLISH_PROFILE }}
+          package: ./website
+
+      ############################################################
+      # Success Message
+      ############################################################
+
+      - name: Deployment Complete
+        run: |
+          echo "========================================="
+          echo "Deployment Completed Successfully"
+          echo "Repository : ${{ github.repository }}"
+          echo "Web App    : ${WEBAPP_NAME}"
+          echo "Branch     : ${{ github.event.inputs.branch }}"
+          echo "Slot       : ${{ github.event.inputs.slot }}"
+          echo "Commit     : $GITHUB_SHA"
+          echo "========================================="
