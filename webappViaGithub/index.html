@@ -1,109 +1,69 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Azure Web App</title>
-
-    <style>
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-        }
-
-        body{
-            height:100vh;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            background:linear-gradient(135deg,#0078D4,#00B7C3);
-        }
-
-        .card{
-            background:white;
-            padding:50px;
-            border-radius:20px;
-            box-shadow:0 20px 40px rgba(0,0,0,0.25);
-            text-align:center;
-            max-width:650px;
-            width:90%;
-            animation:fadeIn 1s ease-in-out;
-        }
-
-        h1{
-            color:#0078D4;
-            font-size:42px;
-            margin-bottom:20px;
-        }
-
-        h2{
-            color:#333;
-            margin-bottom:15px;
-        }
-
-        p{
-            color:#666;
-            font-size:18px;
-            line-height:1.7;
-            margin-bottom:25px;
-        }
-
-        .status{
-            display:inline-block;
-            background:#28a745;
-            color:white;
-            padding:12px 24px;
-            border-radius:30px;
-            font-weight:bold;
-            font-size:18px;
-        }
-
-        .footer{
-            margin-top:35px;
-            color:#777;
-            font-size:15px;
-        }
-
-        @keyframes fadeIn{
-            from{
-                opacity:0;
-                transform:translateY(30px);
-            }
-            to{
-                opacity:1;
-                transform:translateY(0);
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="card">
-
-    <h1>🚀 Azure Web App</h1>
-
-    <h2>Deployment Successful!</h2>
-
-    <p>
-        Congratulations! Your application has been successfully deployed to
-        <strong>Azure App Service</strong> using the
-        <strong>GitHub Actions CI/CD pipeline</strong>.
-    </p>
-
-    <div class="status">
-        ✅ Build Successful 
-    </div>
-
-    <div class="footer">
-        <p>
-            Powered by Microsoft Azure • GitHub Actions • HTML5
-        </p>
-    </div>
-
-</div>
-
-</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<title>Car Dealer</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<link href="maruti.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+		<div id="layout">
+		<div id="titlebg">
+			<div id="logo"></div>
+			<div class="title0"><blink>MARUTI</blink></div>
+			<div class="title"><marquee>CAR</marquee></div>
+			<div class="title1"><blink>DEALER</blink></div>
+			<div class="title2">WE HAVE</div>
+			<div class="title3"><marquee>THE BEST CARS</marquee></div>
+			<div class="titlel">Links: </div><div class="title4"><a target="_blank" href="http://www.marutisuzuki.com/" class="title4">Maruti-Suzuki</a></div>
+			
+			
+			<ul>
+				 <div class="link">  
+				 <li><a href="maruti.php">Home</a></li>
+				 <li><a href="about.php">About</a></li>
+				 <li><a href="services.php">Services</a></li>
+				 <li><a href="catalogue.php">Catalogue</a></li>
+				 <li><a href="catalogueform.php">CatForm</a></li>
+				 <li><a href="contact.php">Contacts</a></li>				 
+				 <li><a href="gallery.php">Gallery</a></li> 
+				 </div>
+			</ul>
+			
+			
+			
+			
+		</div>
+		  <hr id="hrline" />
+		  <div id="gradientbg">
+			<div id="header"></div>
+			<div id="rightside"></div>
+		  </div>
+		  <div id="bodypart">
+			<div id="catalogue">
+			  <div class="cat">CATALOGUE</div>
+			  <div id="cat1"></div>
+			  <div id="car1"></div>
+			  <div id="cat2"></div>
+			  <div id="car2"></div>
+			</div>
+			<div id="line"></div>
+			<div id="ourservices">
+			  <div class="our">OUR SERVICES</div>
+			  <div id="pic1"></div>
+			  <div class="lorem">MarutiSuzuki</div>
+			  <div class="txt">Maruti Finance<br> Maruti Insurance<br>Maruti Genuine Accessories<br>Maruti Genuine Parts<br>Maruti AutoCard<br>Maruti Driving School<br>Maruti True ValueInstitutional Customers
+			  </div>
+			</div>
+			<div id="line1"></div>
+			<div id="aboutus">
+			  <div class="abt">ABOUT US</div>
+			  <div id="pic2"></div>
+			  <div class="lorem1">MarutiSuzuki</div>
+			  <div class="txt1">We started out in 1982 in Gurgaon, Haryana. Little did the then quiet suburb of New Delhi know, that it was going to become the epicenter of the automobile revolution in India. The year marked the birth of the Maruti Suzuki factory. India turned out 40,000 cars every year. </div>
+			  </div>
+		    </div>
+		  <hr id="hrline1" />
+		  <div class="foottxt">Copyright &copy; Cars.  Design by <a href="http://www.maruti.com/" class="foottxt">MARUTI</a>.</div>
+		</div>
+	</body>
 </html>
