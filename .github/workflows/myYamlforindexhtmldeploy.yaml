@@ -21,4 +21,4 @@ jobs:
         with:
           app-name: WebAp1
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: ./webappViaGithub
+          package: ./webappViaGithub/Maruti-Suzuki website-20260731T163122Z-1-001.zip
